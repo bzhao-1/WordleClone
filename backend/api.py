@@ -5,6 +5,7 @@ mongoClient = MongoClient()
 db = mongoClient['words']
 collection = db['word']
 
+header = ['']
 
 
 
