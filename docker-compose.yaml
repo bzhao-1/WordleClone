@@ -1,0 +1,13 @@
+services:
+  app:
+    build: ./backend
+    ports:
+      - "8080:5000"
+    restart: on-failure
+    depends_on:
+      - "db"
+  db:
+    image: mongo
+    expose:
+      - "27017"
+    restart: on-failure
