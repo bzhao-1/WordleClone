@@ -14,7 +14,7 @@ collection = db['word']
 
 '''Reads the CSV file and inserts each word into the collection'''
 header = ['Number', 'Word']
-csvFile = open('5_letter_words.csv', 'r')
+csvFile = open('wordle.csv', 'r')
 reader = csv.DictReader(csvFile)
 for row in reader:
     data = {
@@ -23,10 +23,6 @@ for row in reader:
     }
     collection.insert_one(data)
 
-'''Game Variables'''
-word_to_guess = ""
-attempts_left = 6
-guessed_words = []
 
 '''Starts a new game bandomly selects a word from the collection by generating a random number between 0 and the total number of words in the collection'''
 def start_new_game():
