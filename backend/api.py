@@ -40,7 +40,7 @@ def start_new_game():
         randomValue = next(randomWord, None)
         if randomValue:
             word_to_guess = randomValue['Word']
-            print(word_to_guess)
+            # print(word_to_guess)
 
 
 '''Takes in a guessed word and checks if each letter matches the word to guess, if it does, then the represents as +, if word in guess represented as -, or " " if nothing, also needs to be implemented with frontend'''
@@ -48,12 +48,13 @@ def get_feedback(word, guess):
     feedback = ""
     for i in range(len(word)):
         if word[i] == guess[i]:
-            feedback += "+"
+            feedback += '🟩'
         elif word[i] in guess:
-            feedback += "-"
+            feedback += '🟨'
         else:
-            feedback += " "
+            feedback += '🟥'    
     return feedback
+
 
 #Will change this later, just skeleton code for welcome screen for now, need to add with frontend
 @app.route('/', methods=['GET'])
@@ -62,7 +63,7 @@ def welcome():
 
 
 @app.route('/start', methods=['GET'])
-def start_game():
+def start_game(): 
     start_new_game()
     return jsonify({"message": "Game started. You have 6 attempts to guess the word."})
 
