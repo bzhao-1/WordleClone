@@ -36,6 +36,7 @@ def start_new_game():
         randomValue = next(randomWord, None)
         if randomValue:
             word_to_guess = randomValue['Word']
+    return word_to_guess, attempts_left, guessed_words
             # print(word_to_guess)
 
 
@@ -45,7 +46,7 @@ def get_feedback(word, guess):
     for i in range(len(word)):
         if word[i] == guess[i]:
             feedback += '🟩'
-        elif word[i] in guess:
+        elif guess[i] in word:
             feedback += '🟨'
         else:
             feedback += '🟥'    
@@ -70,8 +71,8 @@ def guess_word():
         return jsonify({"message": "You've used all your attempts. Start a new game."}), 400
 
     guess = request.json.get('guess', '').lower()
-    if len(guess) != 5 or not guess.isalpha():
-        return jsonify({"message": "Invalid guess. Please provide a 5-letter word."}), 400
+    # if len(guess) != 5 or guess not in collection[word]:
+    #     return jsonify({"message": "Invalid guess. Please provide a 5-letter word."}), 400
 
     if guess == word_to_guess:
         return jsonify({"message": "Congratulations! You guessed the word."})
