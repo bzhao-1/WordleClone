@@ -2,7 +2,8 @@ import csv
 import pymongo
 from pymongo import MongoClient
 import random
-from flask import Flask, request, jsonify
+import requests
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
@@ -64,15 +65,20 @@ def start_game():
     start_new_game()
     return jsonify({"message": "Game started. You have 6 attempts to guess the word."})
 
-@app.route('/guess', methods=['POST'])
+@app.route('/guess', methods=['GET'])
 def guess_word():
     global attempts_left, guessed_words, word_to_guess
     if attempts_left <= 0:
         return jsonify({"message": "You've used all your attempts. Start a new game."}), 400
 
-    guess = request.json.get('guess', '').lower()
-    # if len(guess) != 5 or guess not in collection[word]:
-    #     return jsonify({"message": "Invalid guess. Please provide a 5-letter word."}), 400
+    if request.content_type != 'application/json':
+        return jsonify({"message": "Invalid request Content-Type. Please use 'application/json'."}), 400
+
+    try:
+        data = request.get_json()
+        guess = data.get('guess', '').lower()
+    except Exception as e:
+        return jsonify({"message": "Invalid JSON data in the request."}), 400
 
     if guess == word_to_guess:
         return jsonify({"message": "Congratulations! You guessed the word."})
@@ -86,6 +92,11 @@ def guess_word():
         return jsonify({"message": "Game over. The word was '{}'.".format(word_to_guess)})
     
     return jsonify({"attempts_left": attempts_left, "guessed_words": guessed_words, "feedback": feedback})
+
+
+@app.route('/play', methods=['GET'])
+def play():
+    return render_template('frontend/index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

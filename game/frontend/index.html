@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wordle Game</title>
+    <style>
+        /* CSS styles for feedback display */
+        .feedback {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .feedback-char {
+            margin: 0 4px;
+        }
+
+        .green {
+            color: green;
+        }
+
+        .yellow {
+            color: yellow;
+        }
+
+        .red {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wordle Game</h1>
+
+    <p id="message"></p>
+    <p id="attempts-left"></p>
+    <p id="feedback" class="feedback"></p>
+
+    <form id="guess-form">
+        <label for="guess">Enter your guess:</label>
+        <input type="text" id="guess" name="guess" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        const guessForm = document.getElementById("guess-form");
+        const message = document.getElementById("message");
+        const attemptsLeft = document.getElementById("attempts-left");
+        const feedback = document.getElementById("feedback");
+
+        guessForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const guessInput = document.getElementById("guess");
+            const guess = guessInput.value;
+
+            const response = await fetch("/guess", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ guess: guess }),
+            });
+
+            const data = await response.json();
+
+            if (response.status === 200) {
+                message.textContent = data.message;
+            } else if (response.status === 400) {
+                message.textContent = data.message;
+            } else {
+                message.textContent = "An error occurred.";
+            }
+
+            if (data.attempts_left !== undefined) {
+                attemptsLeft.textContent = `Attempts left: ${data.attempts_left}`;
+            }
+
+            if (data.feedback) {
+                const feedbackText = data.feedback;
+                feedback.innerHTML = '';
+
+                for (const char of feedbackText) {
+                    const span = document.createElement('span');
+                    span.classList.add('feedback-char');
+                    span.textContent = char;
+
+                    if (char === '🟩') {
+                        span.classList.add('green'); // Correct position
+                    } else if (char === '🟨') {
+                        span.classList.add('yellow'); // Correct letter in the wrong position
+                    } else if (char === '🟥') {
+                        span.classList.add('red'); // Incorrect letter
+                    }
+
+                    feedback.appendChild(span);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
