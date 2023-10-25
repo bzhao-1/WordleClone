@@ -28,10 +28,11 @@
 </head>
 <body>
     <h1>Wordle Game</h1>
-
+    <button id = "startButton"> Start Game </button> 
     <p id="message"></p>
     <p id="attempts-left"></p>
     <p id="feedback" class="feedback"></p>
+
 
     <form id="guess-form">
         <label for="guess">Enter your guess:</label>
@@ -44,6 +45,9 @@
         const message = document.getElementById("message");
         const attemptsLeft = document.getElementById("attempts-left");
         const feedback = document.getElementById("feedback");
+        
+
+
 
         guessForm.addEventListener("submit", async (event) => {
             event.preventDefault();

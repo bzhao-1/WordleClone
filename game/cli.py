@@ -16,7 +16,7 @@ def main():
     word_to_guess = gameVariables[0]
     attempts_left = gameVariables[1]
     guessed_words = gameVariables[2]
-    # print(word_to_guess)
+    print(word_to_guess)
     while attempts_left > 0:
         print("You have {} attempts left.".format(attempts_left))
         print("Guessed words: {}".format(guessed_words))

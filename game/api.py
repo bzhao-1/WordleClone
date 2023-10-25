@@ -1,3 +1,4 @@
+from collections import Counter
 import csv
 import pymongo
 from pymongo import MongoClient
@@ -38,26 +39,30 @@ def start_new_game():
         if randomValue:
             word_to_guess = randomValue['Word']
     return word_to_guess, attempts_left, guessed_words
-            # print(word_to_guess)
 
 
-'''Takes in a guessed word and checks if each letter matches the word to guess, if it does, then the represents as +, if word in guess represented as -, or " " if nothing, also needs to be implemented with frontend'''
+'''Takes in a guessed word and checks with Wordle logic to provide feedback to the user'''
 def get_feedback(word, guess):
     feedback = ""
+    wordCounter = Counter(word)
+    guessCounter = Counter(guess)
     for i in range(len(word)):
         if word[i] == guess[i]:
             feedback += '🟩'
-        elif guess[i] in word:
+            wordCounter[word[i]] -= 1
+            guessCounter[word[i]] -= 1
+        elif guess[i] in wordCounter and wordCounter[guess[i]] > 0:
             feedback += '🟨'
+            wordCounter[guess[i]] -= 1
         else:
             feedback += '🟥'    
     return feedback
 
 
-#Will change this later, just skeleton code for welcome screen for now, need to add with frontend
+
 @app.route('/', methods=['GET'])
 def welcome():
-    return jsonify({"message": "Wordle"})
+    return render_template('index.html')
 
 
 @app.route('/start', methods=['GET'])
@@ -65,7 +70,7 @@ def start_game():
     start_new_game()
     return jsonify({"message": "Game started. You have 6 attempts to guess the word."})
 
-@app.route('/guess', methods=['GET'])
+@app.route('/guess', methods=['POST'])
 def guess_word():
     global attempts_left, guessed_words, word_to_guess
     if attempts_left <= 0:
@@ -80,13 +85,14 @@ def guess_word():
     except Exception as e:
         return jsonify({"message": "Invalid JSON data in the request."}), 400
 
+    
+    feedback = get_feedback(word_to_guess, guess)
     if guess == word_to_guess:
+        
         return jsonify({"message": "Congratulations! You guessed the word."})
     
     attempts_left -= 1
     guessed_words.append(guess)
-    
-    feedback = get_feedback(word_to_guess, guess)
     
     if attempts_left <= 0:
         return jsonify({"message": "Game over. The word was '{}'.".format(word_to_guess)})
@@ -96,7 +102,7 @@ def guess_word():
 
 @app.route('/play', methods=['GET'])
 def play():
-    return render_template('frontend/index.html')
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
