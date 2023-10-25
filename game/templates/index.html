@@ -28,13 +28,14 @@
 </head>
 <body>
     <h1>Wordle Game</h1>
-    <button id = "startButton"> Start Game </button> 
+
     <p id="message"></p>
     <p id="attempts-left"></p>
     <p id="feedback" class="feedback"></p>
 
-
     <form id="guess-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
         <label for="guess">Enter your guess:</label>
         <input type="text" id="guess" name="guess" required>
         <button type="submit">Submit</button>
@@ -45,17 +46,16 @@
         const message = document.getElementById("message");
         const attemptsLeft = document.getElementById("attempts-left");
         const feedback = document.getElementById("feedback");
-        
-
-
 
         guessForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
+            const usernameInput = document.getElementById("username");
             const guessInput = document.getElementById("guess");
+            const username = usernameInput.value;
             const guess = guessInput.value;
 
-            const response = await fetch("/guess", {
+            const response = await fetch(`/guess/${username}`, {  // Include the username in the URL
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -5,6 +5,7 @@ from pymongo import MongoClient
 import random
 import requests
 from flask import Flask, render_template, request, jsonify
+from bson import ObjectId
 
 app = Flask(__name__)
 
@@ -12,6 +13,7 @@ app = Flask(__name__)
 '''Starts the MongoDB server, builds DB connection and creates collection to store list of words'''
 mongoClient = MongoClient()
 db = mongoClient['words']
+userCollection = db['users']
 collection = db['word']
 
 '''Reads the CSV file and inserts each word into the collection'''
@@ -65,13 +67,14 @@ def welcome():
     return render_template('index.html')
 
 
-@app.route('/start', methods=['GET'])
-def start_game(): 
+@app.route('/start/<username>', methods=['GET'])
+def start_game(username): 
     start_new_game()
+    userCollection.find_one_and_update({'username': username}, {'$inc': {'total_games_played': 1}})
     return jsonify({"message": "Game started. You have 6 attempts to guess the word."})
 
-@app.route('/guess', methods=['POST'])
-def guess_word():
+@app.route('/guess/<username>', methods=['POST'])
+def guess_word(username):
     global attempts_left, guessed_words, word_to_guess
     if attempts_left <= 0:
         return jsonify({"message": "You've used all your attempts. Start a new game."}), 400
@@ -84,25 +87,57 @@ def guess_word():
         guess = data.get('guess', '').lower()
     except Exception as e:
         return jsonify({"message": "Invalid JSON data in the request."}), 400
-
-    
+   
     feedback = get_feedback(word_to_guess, guess)
-    if guess == word_to_guess:
-        
+    if guess == word_to_guess: 
+        userCollection.find_one_and_update({'username': username}, {'$inc': {'total_wins': 1}})
+        userCollection.find_one_and_update({'username': username}, {'$set': {'win_percentage': (userCollection.find_one({'username': username})['total_wins'] / userCollection.find_one({'username': username})['total_games_played']) * 100}})
         return jsonify({"message": "Congratulations! You guessed the word."})
+    
     
     attempts_left -= 1
     guessed_words.append(guess)
     
     if attempts_left <= 0:
+        userCollection.find_one_and_update({'username': username}, {'$inc': {'total_losses': 1}})
         return jsonify({"message": "Game over. The word was '{}'.".format(word_to_guess)})
     
     return jsonify({"attempts_left": attempts_left, "guessed_words": guessed_words, "feedback": feedback})
 
 
-@app.route('/play', methods=['GET'])
-def play():
+@app.route('/play/<username>', methods=['GET'])
+def play(username):
     return render_template('index.html')
+
+
+
+@app.route('/register/<username>', methods=['GET'])
+def register(username):
+    # username = request.form['username']
+    usernameExists = userCollection.find_one({'username': username})
+    if usernameExists:
+        return jsonify({"message": "Username already exists pick a new username."})
+    user_profile = {
+        'username': username,
+        'total_games_played': 0,
+        'win_percentage': 0,
+        'total_wins': 0,
+        'total_losses': 0
+    }
+    userCollection.insert_one(user_profile)
+    return jsonify({"message": "User created"})
+
+
+@app.route('/profile/<username>', methods=['GET'])
+def view_profile(username):
+    user_profile = userCollection.find_one({"username": username})
+    if user_profile:
+        user_profile['_id'] = str(user_profile['_id'])
+        user_profile.pop('_id', None)
+        return jsonify(user_profile)
+    else:
+        return "User not found", 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)
