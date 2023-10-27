@@ -115,7 +115,7 @@ header {
     text-align: center;
     background: var(--default);
     padding: 1rem 0;
-    color: white;
+    color: rgb(0, 38, 255);
     font-size: 2rem;
 }
 
