@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Wordle Game</title>
+    <title>Fast and Intense Wordle</title>
     <style>
         /* CSS styles for feedback display */
         .feedback {
@@ -24,80 +24,240 @@
         .red {
             color: red;
         }
+
+        .grid {
+            display: grid;
+            grid-template-rows: repeat(6, auto);
+            grid-template-columns: repeat(5, auto);
+        }
+
+        #game {
+            display: flex;
+            justify-content: center;
+            align-items: start;
+            margin-top: 5rem;
+            width: 100%;
+            height: 72vh;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-rows: repeat(6, auto);
+            grid-template-columns: repeat(5, auto);
+        }
+
+        .box {
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--empty);
+            margin: 4px;
+            color: rgb(83, 80, 80);
+            border: 1px solid #000;
+            text-transform: uppercase;
+            display: grid;
+            place-items: center;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 2.4rem;
+        }
+
+        .box.empty {
+            background: var(--empty);
+        }
+
+        .box.wrong {
+            background: var(--wrong);
+        }
+
+        .box.right {
+            background: var(--right);
+        }
+
+        .animated {
+            animation: flip 0.5s ease;
+        }
+
+        @keyframes flip {
+            0% {
+                transform: scaleY(1);
+            }
+            50% {
+                transform: scaleY(0);
+            }
+            100% {
+                transform: scaleY(1);
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Wordle Game</h1>
+    <header>
+        <h1>Fast and Intense Wordle</h1>
+    </header>
+
+    <div id="game" class="grid"></div> <!-- This is where the Wordle grid will be displayed -->
 
     <p id="message"></p>
     <p id="attempts-left"></p>
     <p id="feedback" class="feedback"></p>
 
-    <form id="guess-form">
-        <label for="username">Username:</label>
+    <form id="username-form">
+        <label for="username">Enter your username:</label>
         <input type="text" id="username" name="username" required>
-        <label for="guess">Enter your guess:</label>
-        <input type="text" id="guess" name="guess" required>
-        <button type="submit">Submit</button>
+        <button type="button" id="start-game">Start Game</button>
     </form>
 
     <script>
-        const guessForm = document.getElementById("guess-form");
-        const message = document.getElementById("message");
-        const attemptsLeft = document.getElementById("attempts-left");
-        const feedback = document.getElementById("feedback");
-
-        guessForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
+        document.addEventListener("DOMContentLoaded", function() {
+            const usernameForm = document.getElementById("username-form");
             const usernameInput = document.getElementById("username");
-            const guessInput = document.getElementById("guess");
-            const username = usernameInput.value;
-            const guess = guessInput.value;
+            const startGameButton = document.getElementById("start-game");
+            const gameGrid = document.getElementById("game");
+            const guessForm = document.getElementById("guess-form");
 
-            const response = await fetch(`/guess/${username}`, {  // Include the username in the URL
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ guess: guess }),
+            startGameButton.addEventListener("click", function() {
+                const username = usernameInput.value;
+                usernameForm.style.display = "none";
+                guessForm.style.display = "block";
+                initializeGame(username);
             });
 
-            const data = await response.json();
+            function initializeGame(username) {
+                const state = {
+                    grid: Array(6).fill().map(() => Array(5).fill('')),
+                    currentRow: 0,
+                    currentCol: 0,
+                };
 
-            if (response.status === 200) {
-                message.textContent = data.message;
-            } else if (response.status === 400) {
-                message.textContent = data.message;
-            } else {
-                message.textContent = "An error occurred.";
-            }
+                function drawGrid(container) {
+                    const grid = document.createElement('div');
+                    grid.className = 'grid';
 
-            if (data.attempts_left !== undefined) {
-                attemptsLeft.textContent = `Attempts left: ${data.attempts_left}`;
-            }
-
-            if (data.feedback) {
-                const feedbackText = data.feedback;
-                feedback.innerHTML = '';
-
-                for (const char of feedbackText) {
-                    const span = document.createElement('span');
-                    span.classList.add('feedback-char');
-                    span.textContent = char;
-
-                    if (char === '🟩') {
-                        span.classList.add('green'); // Correct position
-                    } else if (char === '🟨') {
-                        span.classList.add('yellow'); // Correct letter in the wrong position
-                    } else if (char === '🟥') {
-                        span.classList.add('red'); // Incorrect letter
+                    for (let i = 0; i < 6; i++) {
+                        for (let j = 0; j < 5; j++) {
+                            drawBox(grid, i, j);
+                        }
                     }
 
-                    feedback.appendChild(span);
+                    container.appendChild(grid);
                 }
+
+                function updateGrid() {
+                    for (let i = 0; i < state.grid.length; i++) {
+                        for (let j = 0; j < state.grid[i].length; j++) {
+                            const box = document.getElementById(`box${i}${j}`);
+                            box.textContent = state.grid[i][j];
+                        }
+                    }
+                }
+
+                function drawBox(container, row, col, letter = '') {
+                    const box = document.createElement('div');
+                    box.className = 'box';
+                    box.textContent = letter;
+                    box.id = `box${row}${col}`;
+
+                    container.appendChild(box);
+                    return box;
+                }
+
+                function registerKeyboardEvents() {
+                    document.body.onkeydown = (e) => {
+                        const key = e.key;
+                        if (key === 'Enter') {
+                            if (state.currentCol === 5) {
+                                const guess = state.grid[state.currentRow].join('');
+                                makeGuess(username, guess);
+                                state.currentRow++;
+                                state.currentCol = 0;
+                            }
+                        }
+                        if (key === 'Backspace') {
+                            removeLetter();
+                        }
+                        if (isLetter(key)) {
+                            addLetter(key);
+                        }
+
+                        updateGrid();
+                    };
+                }
+
+                function isLetter(key) {
+                    return key.length === 1 && key.match(/[a-z]/i);
+                }
+
+                function addLetter(letter) {
+                    if (state.currentCol === 5) return;
+                    state.grid[state.currentRow][state.currentCol] = letter;
+                    state.currentCol++;
+                }
+
+                function removeLetter() {
+                    if (state.currentCol === 0) return;
+                    state.grid[state.currentRow][state.currentCol - 1] = '';
+                    state.currentCol--;
+                }
+
+                function makeGuess(username, guess) {
+                    // Send the guess to the server and handle the response
+                    const url = `/guess/${username}`;
+                    fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ guess }),
+                    })
+                    .then(response => response.json())
+                    .then(data => handleGuessResponse(data))
+                    .catch(error => console.error("An error occurred:", error));
+                }
+
+                function handleGuessResponse(data) {
+                    // Process the feedback received from the server
+                    if (data.message) {
+                        const message = document.getElementById("message");
+                        message.textContent = data.message;
+                    }
+
+                    if (data.attempts_left !== undefined) {
+                        const attemptsLeft = document.getElementById("attempts-left");
+                        attemptsLeft.textContent = `Attempts left: ${data.attempts_left}`;
+                    }
+
+                    if (data.feedback) {
+                        const feedback = document.getElementById("feedback");
+                        const feedbackText = data.feedback;
+                        feedback.innerHTML = '';
+
+                        for (const char of feedbackText) {
+                            const span = document.createElement('span');
+                            span.classList.add('feedback-char');
+                            span.textContent = char;
+
+                            if (char === '🟩') {
+                                span.classList.add('green');
+                            } else if (char === '🟨') {
+                                span.classList.add('yellow');
+                            } else if (char === '🟥') {
+                                span.classList.add('red');
+                            }
+
+                            feedback.appendChild(span);
+                        }
+                    }
+                }
+
+                drawGrid(gameGrid);
+                registerKeyboardEvents();
             }
         });
     </script>
+
+    <form id="guess-form" style="display: none;"> <!-- Hide the original guess form -->
+        <button type="submit">Submit Guess</button>
+    </form>
 </body>
 </html>
+
+

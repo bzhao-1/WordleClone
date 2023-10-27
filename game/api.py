@@ -92,7 +92,8 @@ def guess_word(username):
     if guess == word_to_guess: 
         userCollection.find_one_and_update({'username': username}, {'$inc': {'total_wins': 1}})
         userCollection.find_one_and_update({'username': username}, {'$set': {'win_percentage': (userCollection.find_one({'username': username})['total_wins'] / userCollection.find_one({'username': username})['total_games_played']) * 100}})
-        return jsonify({"message": "Congratulations! You guessed the word."})
+        feedback = '🟩' * 5
+        return jsonify({"message": "Congratulations! You guessed the word.", "guessed_words": guessed_words, "feedback": feedback})
     
     
     attempts_left -= 1
