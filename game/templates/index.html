@@ -89,6 +89,7 @@
             place-items: center;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 2.4rem;
+            /* background-color: blueviolet; */
         }
 
         .box.empty {
@@ -261,20 +262,26 @@
                         const feedbackText = data.feedback;
                         feedback.innerHTML = '';
 
+                        let i = 0;
                         for (const char of feedbackText) {
                             const span = document.createElement('span');
                             span.classList.add('feedback-char');
                             span.textContent = char;
 
+                            let box = document.getElementById(`box${state.currentRow -1}${i}`);
+
                             if (char === '🟩') {
                                 span.classList.add('green');
+                                box.style.backgroundColor = 'green';
                             } else if (char === '🟨') {
                                 span.classList.add('yellow');
+                                box.style.backgroundColor = 'yellow';
                             } else if (char === '🟥') {
                                 span.classList.add('red');
+                                box.style.backgroundColor = 'red';
                             }
-
                             feedback.appendChild(span);
+                            i = i + 1;
                         }
                     }
                 }
