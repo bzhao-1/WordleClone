@@ -76,6 +76,7 @@ def start_game(username):
 @app.route('/guess/<username>', methods=['POST'])
 def guess_word(username):
     global attempts_left, guessed_words, word_to_guess
+    print(word_to_guess)
     if attempts_left <= 0:
         return jsonify({"message": "You've used all your attempts. Start a new game."}), 400
 

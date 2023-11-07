@@ -126,7 +126,7 @@
         <h1>Fast and Intense Wordle</h1>
     </header>
 
-    <div id="game" class="grid"></div> <!-- This is where the Wordle grid will be displayed -->
+    <div id="game" class="grid"></div> <!-- Display Wordle Grid -->
 
     <p id="message"></p>
     <p id="attempts-left"></p>
@@ -146,10 +146,16 @@
             const gameGrid = document.getElementById("game");
             const guessForm = document.getElementById("guess-form");
 
+            function startGame(username) {
+                const url = `/start/${username}`;
+                console.log("Calling /start:", url);
+                fetch(url, {method: 'get'});
+            }
+
             startGameButton.addEventListener("click", function() {
                 const username = usernameInput.value;
                 usernameForm.style.display = "none";
-                guessForm.style.display = "block";
+                startGame(username);
                 initializeGame(username);
             });
             
@@ -230,6 +236,8 @@
                     state.currentCol--;
                 }
 
+
+
                 function makeGuess(username, guess) {
                     // Send the guess to the server and handle the response
                     const url = `/guess/${username}`;
@@ -291,10 +299,6 @@
             }
         });
     </script>
-
-    <form id="guess-form" style="display: none;"> <!-- Hide the original guess form -->
-        <button type="submit">Submit Guess</button>
-    </form>
 </body>
 </html>
 
