@@ -69,8 +69,22 @@ def welcome():
 
 @app.route('/start/<username>', methods=['GET'])
 def start_game(username): 
+    user = userCollection.find_one({'username': username})
+    
+    if user:
+        # The user already exists, update their total games played
+        userCollection.find_one_and_update({'username': username}, {'$inc': {'total_games_played': 1}})
+    else:
+        # The user doesn't exist, so register them
+        user_profile = {
+            'username': username,
+            'total_games_played': 1,
+            'win_percentage': 0,
+            'total_wins': 0,
+            'total_losses': 0
+        }
+        userCollection.insert_one(user_profile)
     start_new_game()
-    userCollection.find_one_and_update({'username': username}, {'$inc': {'total_games_played': 1}})
     return jsonify({"message": "Game started. You have 6 attempts to guess the word."})
 
 @app.route('/guess/<username>', methods=['POST'])
