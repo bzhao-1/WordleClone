@@ -71,54 +71,33 @@
             border-width: 1px;
         }
 
-        .grid {
-            display: grid;
-            grid-template-rows: repeat(6, auto);
-            grid-template-columns: repeat(5, auto);
+        .centered-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 50vh;
         }
 
-        .box {
-            width: 60px;
-            height: 60px;
-            border: 2px solid var(--empty);
-            margin: 4px;
-            color: rgb(83, 80, 80);
-            border: 1px solid #000;
-            text-transform: uppercase;
-            display: grid;
-            place-items: center;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 2.4rem;
-            /* background-color: blueviolet; */
+        .centered-buttons button {
+            font-size: 2rem;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 10px;
+            cursor: pointer;
         }
 
-        .box.empty {
-            background: var(--empty);
+        .centered-buttons button:hover {
+            background-color: #0056b3;
         }
 
-        .box.wrong {
-            background: var(--wrong);
+        .centered-buttons button#start-game {
+            background-color: #5BCF32;
         }
 
-        .box.right {
-            background: var(--right);
-        }
-
-        .animated {
-            animation: flip 0.5s ease;
-        }
-
-        @keyframes flip {
-            0% {
-                transform: scaleY(1);
-            }
-            50% {
-                transform: scaleY(0);
-            }
-            100% {
-                transform: scaleY(1);
-            }
-        }
     </style>
 </head>
 <body>
@@ -132,10 +111,21 @@
     <p id="attempts-left"></p>
     <p id="feedback" class="feedback"></p>
 
-    <form id="username-form">
+    <div class="centered-buttons">
+        <button id="register-user">Register New User</button>
+        <button id="start-game">Start Game</button>
+    </div>
+
+    <form id="username-form" style="display: none;">
         <label for="username">Enter your username:</label>
         <input type="text" id="username" name="username" required>
         <button type="button" id="start-game">Start Game</button>
+    </form>
+
+    <form id="registration-form" style="display: none;">
+        <label for="username">Enter your username:</label>
+        <input type="text" id="registration-username" name="username" required>
+        <button type="submit">Register User</button>
     </form>
 
     <script>
@@ -143,8 +133,56 @@
             const usernameForm = document.getElementById("username-form");
             const usernameInput = document.getElementById("username");
             const startGameButton = document.getElementById("start-game");
+            const registrationForm = document.getElementById("registration-form");
+            const registrationUsernameInput = document.getElementById("registration-username");
             const gameGrid = document.getElementById("game");
             const guessForm = document.getElementById("guess-form");
+
+            startGameButton.addEventListener("click", function() {
+                const username = usernameInput.value;
+                usernameForm.style.display = "none";
+                guessForm.style.display = "block";
+                // Send a request to start the game
+                fetch(`/start/${username}`, {
+                    method: "GET",
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        const message = document.getElementById("message");
+                        message.textContent = data.message;
+                        // You can also initialize the game here if needed
+                    })
+                    .catch((error) => console.error("An error occurred:", error));
+            });
+
+            const registerButton = document.getElementById("register-user"); // Register button element
+            registerButton.addEventListener("click", function() {
+                usernameForm.style.display = "none";
+                registrationForm.style.display = "block"; // Display the registration form
+            });
+
+            registrationForm.addEventListener("submit", function(e) {
+                e.preventDefault();
+                const username = registrationUsernameInput.value;
+                if (username.trim() === "") {
+                    alert("Please enter a valid username.");
+                } else {
+                    registerUser(username);
+                }
+            });
+
+            function registerUser(username) {
+                const url = `/register/${username}`;
+                fetch(url, {
+                    method: "GET"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const message = document.getElementById("message");
+                    message.textContent = data.message;
+                })
+                .catch(error => console.error("An error occurred:", error));
+            }
 
             startGameButton.addEventListener("click", function() {
                 const username = usernameInput.value;
@@ -297,5 +335,3 @@
     </form>
 </body>
 </html>
-
-
