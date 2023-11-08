@@ -104,6 +104,7 @@ def guess_word(username):
         return jsonify({"message": "Invalid JSON data in the request."}), 400
    
     feedback = get_feedback(word_to_guess, guess)
+    attempts_left -= 1
     if guess == word_to_guess: 
         userCollection.find_one_and_update({'username': username}, {'$inc': {'total_wins': 1}})
         userCollection.find_one_and_update({'username': username}, {'$set': {'win_percentage': (userCollection.find_one({'username': username})['total_wins'] / userCollection.find_one({'username': username})['total_games_played']) * 100}})
@@ -111,7 +112,6 @@ def guess_word(username):
         return jsonify({"message": "Congratulations! You guessed the word.", "guessed_words": guessed_words, "feedback": feedback})
     
     
-    attempts_left -= 1
     guessed_words.append(guess)
     
     if attempts_left <= 0:

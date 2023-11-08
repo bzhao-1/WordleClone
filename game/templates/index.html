@@ -144,7 +144,7 @@
 
     <div id="game" class="grid"></div> <!-- Display Wordle Grid -->
 
-    <button id="play-again" style="display: none;">Play Again</button>
+    <button id="sign-out" style="display: none;">Sign Out & Play Again</button>
     <form id="username-form">
         <label for="username">Enter your username:</label>
         <input type="text" id="username" name="username" required>
@@ -162,6 +162,7 @@
             const startGameButton = document.getElementById("start-game");
             const gameGrid = document.getElementById("game");
             const guessForm = document.getElementById("guess-form");
+            const signOutButton = document.getElementById("sign-out");
 
             function startGame(username) {
                 const url = `/start/${username}`;
@@ -169,11 +170,16 @@
                 fetch(url, {method: 'get'});
             }
 
+            signOutButton.addEventListener("click", function () {
+                location.reload();
+            });
+
             startGameButton.addEventListener("click", function() {
                 const username = usernameInput.value;
                 usernameForm.style.display = "none";
                 startGame(username);
                 initializeGame(username);
+                document.getElementById("sign-out").style.display = "block";
             });
             
             function initializeGame(username) {
