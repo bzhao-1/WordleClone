@@ -3,7 +3,7 @@ import csv
 import pymongo
 from pymongo import MongoClient
 import random
-import requests
+#import requests
 from flask import Flask, render_template, request, jsonify
 from bson import ObjectId
 
@@ -116,7 +116,7 @@ def guess_word(username):
     
     if attempts_left <= 0:
         userCollection.find_one_and_update({'username': username}, {'$inc': {'total_losses': 1}})
-        return jsonify({"message": "Game over. The word was '{}'.".format(word_to_guess)})
+        return jsonify({"message": "Game over. The word was '{}'.".format(word_to_guess), "attempts_left": attempts_left, "guessed_words": guessed_words, "feedback": feedback })
     
     return jsonify({"attempts_left": attempts_left, "guessed_words": guessed_words, "feedback": feedback})
 
