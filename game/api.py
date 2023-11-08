@@ -3,7 +3,7 @@ import csv
 import pymongo
 from pymongo import MongoClient
 import random
-import requests
+#import requests
 from flask import Flask, render_template, request, jsonify
 from bson import ObjectId
 
