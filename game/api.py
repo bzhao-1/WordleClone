@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 
 '''Starts the MongoDB server, builds DB connection and creates collection to store list of words'''
-mongoClient = MongoClient()
+mongoClient = MongoClient("mongodb://db:27017/")
 db = mongoClient['words']
 userCollection = db['users']
 collection = db['word']
@@ -26,6 +26,7 @@ for row in reader:
         'Word': row['Word']
     }
     collection.insert_one(data)
+
 
 
 '''Starts a new game bandomly selects a word from the collection by generating a random number between 0 and the total number of words in the collection'''
@@ -156,7 +157,7 @@ def view_profile(username):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
 
 
 

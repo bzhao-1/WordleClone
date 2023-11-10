@@ -1,6 +1,6 @@
 services:
   app:
-    build: ./backend
+    build: ./game
     ports:
       - "8080:5000"
     restart: on-failure
