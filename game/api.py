@@ -54,7 +54,7 @@ def get_feedback(word, guess):
             feedback += '🟩'
             wordCounter[word[i]] -= 1
             guessCounter[word[i]] -= 1
-        elif guess[i] in wordCounter and wordCounter[guess[i]] > 0:
+        elif guess[i] in wordCounter and wordCounter[guess[i]] > 0 and wordCounter[guess[i]] == guessCounter[guess[i]]:
             feedback += '🟨'
             wordCounter[guess[i]] -= 1
         else:

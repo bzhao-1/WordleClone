@@ -149,7 +149,10 @@
         <h1 id = "totalLosses"> </h1>
         <h1>Win Percentage</h1>
         <h1 id = "winText"></h1>
+        <button id="sign-out">Sign Out & Play Again</button>
+    
         <script>
+            const signOutButton = document.getElementById("sign-out");
             const username = "{{ username }}";
             fetch(`/profile/${username}`)
             .then(response => response.json())
@@ -165,6 +168,9 @@
                 percent = document.getElementById('winText');
                 percent.textContent = data["win_percentage"] + '%';
             })
+            signOutButton.addEventListener("click", function () {
+                window.location.href = "/";
+            });
         </script>
     </body>
 </html>
