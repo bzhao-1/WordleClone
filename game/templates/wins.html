@@ -139,13 +139,29 @@
         </style>
     </head>
     <body>
+        <h1> Username </h1>
+        <h1 id = "username"> </h1>
+        <h1> Total Games Placed </h1>
+        <h1 id = "gamesPlayed"> </h1>
+        <h1> Total Wins </h1> 
+        <h1 id = "totalWins"> </h1> 
+        <h1> Total Losses </h1>
+        <h1 id = "totalLosses"> </h1>
         <h1>Win Percentage</h1>
-        <h1 id="winText"></h1>
+        <h1 id = "winText"></h1>
         <script>
             const username = "{{ username }}";
             fetch(`/profile/${username}`)
             .then(response => response.json())
             .then(data => {
+                usernameText = document.getElementById('username');
+                usernameText.textContent = data['username'];
+                gamesPlayed = document.getElementById('gamesPlayed');
+                gamesPlayed.textContent = data['total_games_played'];
+                totalWns = document.getElementById('totalWins');
+                totalWins.textContent = data['total_wins'];
+                totalLosses = document.getElementById('totalLosses');
+                totalLosses.textContent = data['total_losses'];
                 percent = document.getElementById('winText');
                 percent.textContent = data["win_percentage"] + '%';
             })
