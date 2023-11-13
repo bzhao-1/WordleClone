@@ -61,7 +61,9 @@ def get_feedback(word, guess):
             feedback += '🟥'    
     return feedback
 
-
+@app.route('/getWins')
+def winChange():
+    return jsonify({'success': True})
 
 @app.route('/', methods=['GET'])
 def welcome():
@@ -114,7 +116,6 @@ def guess_word(username):
     
     
     guessed_words.append(guess)
-    
     if attempts_left <= 0:
         userCollection.find_one_and_update({'username': username}, {'$inc': {'total_losses': 1}})
         return jsonify({"message": "Game over. The word was '{}'.".format(word_to_guess), "attempts_left": attempts_left, "guessed_words": guessed_words, "feedback": feedback })
@@ -144,7 +145,14 @@ def register(username):
     userCollection.insert_one(user_profile)
     return jsonify({"message": "User created"})
 
+@app.route('/wins/<username>')
+def wins(username):
+    return render_template('wins.html', username=username)
 
+@app.route('/getWins')
+def getWins():
+    return jsonify({'success': True})
+    
 @app.route('/profile/<username>', methods=['GET'])
 def view_profile(username):
     user_profile = userCollection.find_one({"username": username})

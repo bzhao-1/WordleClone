@@ -169,7 +169,20 @@
                 console.log("Calling /start:", url);
                 fetch(url, {method: 'get'});
             }
-
+            
+            function getWins(username) {
+                const url = `/getWins`;
+                fetch(url, {method: 'get'})
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                    // Redirect to the other page
+                    window.location.href = `/wins/${usernameInput.value}`;
+                } else {
+                    console.error('Failed to change the page.');
+                }
+                })
+            }
             signOutButton.addEventListener("click", function () {
                 location.reload();
             });
@@ -188,7 +201,11 @@
                     currentRow: 0,
                     currentCol: 0,
                 };
-
+                var winsButton = document.createElement("button");
+                winsButton.textContent = "Click to see win percentage";
+                winsButton.type = "button";
+                winsButton.onclick = getWins;
+                document.body.appendChild(winsButton);
                 function drawGrid(container) {
                     const grid = document.createElement('div');
                     grid.className = 'grid';

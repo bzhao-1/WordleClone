@@ -144,7 +144,7 @@ const state = {
     }, 3 * animation_duration);
   }
   
-  function isLetter(key) {
+  function isLetter(key) { 
     return key.length === 1 && key.match(/[a-z]/i);
   }
   
