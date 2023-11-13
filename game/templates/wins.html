@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            /* CSS styles for feedback display */
+            h1 {
+                text-align: center;
+            }
+            body {
+                background-color: rgb(10, 10, 10); /* Set a background color */
+                color: white; /* Set the text color to white */
+            }
+        
+            .feedback {
+                font-size: 24px;
+                margin: 10px 0;
+            }
+        
+            .feedback-char {
+                margin: 0 4px;
+            }
+        
+            .green {
+                color: green;
+            }
+        
+            .yellow {
+                color: yellow;
+            }
+        
+            .red {
+                color: red;
+            }
+        
+            .grid {
+                display: grid;
+                grid-template-rows: repeat(6, auto);
+                grid-template-columns: repeat(5, auto);
+            }
+        
+            #game {
+                display: flex;
+                justify-content: center;
+                align-items: start;
+                margin-top: 5rem;
+                width: 100%;
+                height: 72vh;
+            }
+        
+            .title {
+                color: white;
+                background: rgb(10, 10, 10); /* Set heading background color */
+                text-align: center;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                font-size: 3rem;
+                margin-bottom: 0;
+                position: relative;
+            }
+        
+            header {
+                text-align: center;
+                background: rgb(10, 10, 10);
+                padding: 1rem 0;
+                color: rgb(0, 38, 255);
+                font-size: 2rem;
+            }
+        
+            .title-word-clone {
+                position: absolute;
+                left: calc(50% + 75px);
+                transform: rotate(25deg);
+                color: yellow;
+                font-size: 1.2rem;
+            }
+        
+            hr {
+                border-style: solid;
+                border-color: var(--empty);
+                border-width: 1px;
+            }
+        
+            .grid {
+                display: grid;
+                grid-template-rows: repeat(6, auto);
+                grid-template-columns: repeat(5, auto);
+            }
+        
+            .box {
+                width: 60px;
+                height: 60px;
+                border: 2px solid var(--empty);
+                margin: 4px;
+                color: black; /* Set box text color to white */
+                border: 1px solid #000;
+                text-transform: uppercase;
+                display: grid;
+                place-items: center;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 2.4rem;
+                background-color: white; /* Set box background color to white */
+            }
+        
+            .box.empty {
+                background: var(--empty);
+            }
+        
+            .box.wrong {
+                background: var(--wrong);
+            }
+        
+            .box.right {
+                background: var(--right);
+            }
+        
+            .animated {
+                animation: flip 0.5s ease;
+            }
+        
+            /* Style the "Start Game" button */
+            #username-form {
+                text-align: center; /* Center the form */
+                margin-top: 2rem; /* Adjust top margin for spacing */
+            }
+        
+            #start-game {
+                background-color: rgb(0, 38, 255); /* Set button background color */
+                color: white; /* Set button text color */
+                padding: 10px 20px; /* Adjust padding for better appearance */
+                border: none; /* Remove button border */
+                cursor: pointer;
+                font-size: 1.2rem;
+            }
+
+        
+    
+        #start-game:hover {
+            background-color: #000;
+        }
+        </style>
+    </head>
+    <body>
+        <h1> Username </h1>
+        <h1 id = "username"> </h1>
+        <h1> Total Games Placed </h1>
+        <h1 id = "gamesPlayed"> </h1>
+        <h1> Total Wins </h1> 
+        <h1 id = "totalWins"> </h1> 
+        <h1> Total Losses </h1>
+        <h1 id = "totalLosses"> </h1>
+        <h1>Win Percentage</h1>
+        <h1 id = "winText"></h1>
+        <script>
+            const username = "{{ username }}";
+            fetch(`/profile/${username}`)
+            .then(response => response.json())
+            .then(data => {
+                usernameText = document.getElementById('username');
+                usernameText.textContent = data['username'];
+                gamesPlayed = document.getElementById('gamesPlayed');
+                gamesPlayed.textContent = data['total_games_played'];
+                totalWns = document.getElementById('totalWins');
+                totalWins.textContent = data['total_wins'];
+                totalLosses = document.getElementById('totalLosses');
+                totalLosses.textContent = data['total_losses'];
+                percent = document.getElementById('winText');
+                percent.textContent = data["win_percentage"] + '%';
+            })
+        </script>
+    </body>
+</html>
