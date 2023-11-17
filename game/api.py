@@ -49,16 +49,26 @@ def get_feedback(word, guess):
     feedback = ""
     wordCounter = Counter(word)
     guessCounter = Counter(guess)
-    for i in range(len(word)):
+    for i in range(len(guess)):
         if word[i] == guess[i]:
             feedback += '🟩'
             wordCounter[word[i]] -= 1
             guessCounter[word[i]] -= 1
-        elif guess[i] in wordCounter and wordCounter[guess[i]] > 0 and wordCounter[guess[i]] == guessCounter[guess[i]]:
-            feedback += '🟨'
-            wordCounter[guess[i]] -= 1
+        elif guess[i] in wordCounter and wordCounter[guess[i]] > 0:
+            if guessCounter[guess[i]] > 0 and guessCounter[guess[i]] > wordCounter[guess[i]]:
+                feedback += '🟥' 
+                guessCounter[guess[i]] -= 1
+            elif guessCounter[guess[i]] > 0 and guessCounter[guess[i]] == wordCounter[guess[i]]:
+                feedback += '🟨'
+                wordCounter[guess[i]] -= 1
+                guessCounter[guess[i]] -= 1
+            elif guessCounter[guess[i]] > 0 and guessCounter[guess[i]] < wordCounter[guess[i]]:
+                feedback += '🟨'
+                wordCounter[guess[i]] -= 1
+            else:
+                feedback += '🟥' 
         else:
-            feedback += '🟥'    
+            feedback += '🟥'     
     return feedback
 
 @app.route('/getWins')
@@ -93,7 +103,7 @@ def start_game(username):
 @app.route('/guess/<username>', methods=['POST'])
 def guess_word(username):
     global attempts_left, guessed_words, word_to_guess
-    print(word_to_guess)
+    
     if attempts_left <= 0:
         return jsonify({"message": "You've used all your attempts. Start a new game."}), 400
 
