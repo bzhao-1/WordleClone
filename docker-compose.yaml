@@ -11,3 +11,5 @@ services:
     expose:
       - "27017"
     restart: on-failure
+    volumes:
+      - ./database_storage_folder:/data/db
