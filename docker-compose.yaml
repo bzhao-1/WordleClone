@@ -12,4 +12,4 @@ services:
       - "27017"
     restart: on-failure
     volumes:
-      - ./laptopfolder:/data/db
+      - ./database_storage_folder:/data/db
