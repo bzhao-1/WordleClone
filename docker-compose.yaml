@@ -11,3 +11,5 @@ services:
     expose:
       - "27017"
     restart: on-failure
+    volumes:
+      - ./laptopfolder:/data/db
