@@ -67,3 +67,4 @@ Our static frontend lives within its own directory and is a version of wordle th
 
 ## Credits
 We would like to thank Prof. Matt Lepinski for all of the patience and help given to us throughout this term. He has been instrumental in guiding us in completing our project. 
+We would also like to thank Ezra Barber for contributing a link to a page that shows the win percentage. He added the static html page for us and we filled in the specific features of the user profile that we wanted. 
