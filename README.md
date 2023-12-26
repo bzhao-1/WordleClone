@@ -1,6 +1,6 @@
-# CS347-Final
+# Wordle Clone
 
-Final Project for CS347
+Final Project for CS347: Wordle
 
 # Wordle
 
